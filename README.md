@@ -1,6 +1,6 @@
 # Artificial Lazy Game Builder (algb)
 
-One shot lazy game builder for saving labor cost
+One shot lazy game builder for saving labor cost!
 
 ## Project Structure
 ```
