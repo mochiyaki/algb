@@ -5,7 +5,7 @@ One shot lazy game builder for saving labor cost
 ## Project Structure
 ```
 Artificial Lazy Game Builder/
-├── .env
+├── .env (not shown)
 ├── index.html
 ├── package.json
 ├── postcss.config.js
