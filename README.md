@@ -26,7 +26,7 @@ Artificial Lazy Game Builder/
 ## Detailed Component Structure
 
 ### Main Application
-- Handles state management for messages, loading, theme, model mode, and language settings
+- Handles state management for messages, loading, theme, model mode, and other settings
 - Manages the chat interface with user and assistant messages
 - Implements dark/light mode toggle with localStorage persistence
 - Controls model switching between local and agent API
@@ -34,7 +34,6 @@ Artificial Lazy Game Builder/
 
 ### Components
   - Handles sending messages to the AI model
-  - Integrates speech recognition for voice input
   - Displays individual chat messages
   - Renders assistant responses with syntax highlighting
   - Provides download functionality for generated code
@@ -43,8 +42,6 @@ Artificial Lazy Game Builder/
   - Handles communication with local LLM and agent API
   - Manages different endpoints for local model vs agent API
   - Implements error handling for API calls
-  - Provides functionality to download generated code as files
-  - Supports various file formats (HTML, JS, Python, CSS)
 
 ### Assets
 - Various PNG images used in the UI
