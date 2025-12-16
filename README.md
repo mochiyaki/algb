@@ -12,7 +12,6 @@ Artificial Lazy Game Builder/
 ├── README.md
 ├── tailwind.config.js
 └── vite.config.js
-
 ├── src/
 │   ├── App.tsx
 │   ├── main.tsx
