@@ -1,43 +1,4 @@
-const { useState, useEffect, useRef, useCallback } = React;
-
-// Utility functions
-const generateId = () => Math.random().toString(36).substring(2, 15);
-const formatTime = (date) => new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-const formatDate = (date) => new Date(date).toLocaleDateString([], { month: 'short', day: 'numeric' });
-
-// Default settings
-const defaultSettings = {
-  apiMode: 'api',
-  apiEndpoint: 'https://api.tzafon.ai/v1',
-  apiKey: '',
-  model: 'tzafon.northstar.cua.sft',
-  localEndpoint: 'http://localhost:1234/v1/chat/completions',
-  localModel: 'local-model',
-  systemPrompt: 'You are a helpful AI assistant. When asked to generate HTML code, always use proper code blocks with ```html syntax.',
-  streaming: true,
-  temperature: 0.7,
-  maxTokens: 4096,
-  topP: 1.0,
-  darkMode: true
-};
-
-// Pig mascot component
-const PigMascot = ({ state = 'normal', size = 40 }) => {
-  const pigStates = {
-    normal: './assets/images/4f0f68db9ae2e95fcef3842061489bfd3a93c0133dfae2c552178607823f6555',
-    thinking: './assets/images/8fb7870dc8becc3faa77ea3d9f7bd6f47f0e64e270d8c2275c7e7e07be5c579b',
-    confused: './assets/images/f86d1781277a3de7c78dd2ca973b8b17af4f14ae5ec76856abebc6ac623fddc8',
-    happy: './assets/images/9cf061436a2128d4b1edf70143ff6b5750ebaf981d289dfb83770d2158ad5636'
-  };
-  
-  return React.createElement('img', {
-    src: pigStates[state] || pigStates.normal,
-    alt: 'Berry Pig',
-    style: { width: size, height: size, objectFit: 'contain' },
-    className: state === 'thinking' ? 'animate-bounce' : ''
-  });
-};
-
+const{useState,useEffect,useRef,useCallback}=React;const generateId=()=>Math.random().toString(36).substring(2,15);const formatTime=(date)=>new Date(date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});const formatDate=(date)=>new Date(date).toLocaleDateString([],{month:'short',day:'numeric'});const defaultSettings={apiMode:'api',apiEndpoint:'https://api.tzafon.ai/v1',apiKey:'',model:'tzafon.northstar.cua.sft',localEndpoint:'http://localhost:1234/v1/chat/completions',localModel:'local-model',systemPrompt:'You are a helpful AI assistant. When asked to generate HTML code, always use proper code blocks with ```html syntax.',streaming:true,temperature:0.7,maxTokens:4096,topP:1.0,darkMode:true};const PigMascot=({state='normal',size=40})=>{const pigStates={normal:'./assets/images/4f0f68db9ae2e95fcef3842061489bfd3a93c0133dfae2c552178607823f6555',thinking:'./assets/images/8fb7870dc8becc3faa77ea3d9f7bd6f47f0e64e270d8c2275c7e7e07be5c579b',confused:'./assets/images/f86d1781277a3de7c78dd2ca973b8b17af4f14ae5ec76856abebc6ac623fddc8',happy:'./assets/images/9cf061436a2128d4b1edf70143ff6b5750ebaf981d289dfb83770d2158ad5636'};return React.createElement('img',{src:pigStates[state]||pigStates.normal,alt:'Pig',style:{width:size,height:size,objectFit:'contain'},className:state==='thinking'?'animate-bounce':''});};
 // Icon components
 const Icons = {
   Plus: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
@@ -101,31 +62,26 @@ const Icons = {
     React.createElement('path', { d: 'M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z' })
   )
 };
-
 // Code block component with syntax highlighting
 const CodeBlock = ({ code, language }) => {
   const [copied, setCopied] = useState(false);
   const codeRef = useRef(null);
   const isHtml = language === 'html' || language === 'htm';
-
   useEffect(() => {
     if (codeRef.current) {
       hljs.highlightElement(codeRef.current);
     }
   }, [code]);
-
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   const handleLaunch = () => {
     const blob = new Blob([code], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
   };
-
   return React.createElement('div', { className: 'code-block-wrapper relative group my-3' },
     React.createElement('div', { className: 'code-block-header flex items-center justify-between px-3 py-2 bg-gray-800 rounded-t-lg border-b border-gray-700' },
       React.createElement('span', { className: 'text-xs text-gray-400 font-mono' }, language || 'code'),
@@ -152,21 +108,18 @@ const CodeBlock = ({ code, language }) => {
     )
   );
 };
-
 // Message component with markdown rendering
 const Message = ({ message, onEdit, onResend }) => {
   const [showTime, setShowTime] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const isUser = message.role === 'user';
-
   const renderContent = (content) => {
     // Parse markdown and extract code blocks
     const parts = [];
     const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
     let lastIndex = 0;
     let match;
-
     while ((match = codeBlockRegex.exec(content)) !== null) {
       // Add text before code block
       if (match.index > lastIndex) {
@@ -181,7 +134,6 @@ const Message = ({ message, onEdit, onResend }) => {
     if (lastIndex < content.length) {
       parts.push({ type: 'text', content: content.slice(lastIndex) });
     }
-
     return parts.map((part, i) => {
       if (part.type === 'code') {
         return React.createElement(CodeBlock, { key: i, code: part.content, language: part.language });
@@ -196,12 +148,10 @@ const Message = ({ message, onEdit, onResend }) => {
       }
     });
   };
-
   const handleSaveEdit = () => {
     onEdit(message.id, editContent);
     setIsEditing(false);
   };
-
   return React.createElement('div', {
     className: `message-container flex ${isUser ? 'justify-end' : 'justify-start'} mb-4`,
     onMouseEnter: () => setShowTime(true),
@@ -247,7 +197,6 @@ const Message = ({ message, onEdit, onResend }) => {
     )
   );
 };
-
 // Typing indicator
 const TypingIndicator = () => {
   return React.createElement('div', { className: 'flex items-center gap-3 mb-4' },
@@ -259,21 +208,17 @@ const TypingIndicator = () => {
     )
   );
 };
-
 // Settings panel
 const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
   const [localSettings, setLocalSettings] = useState(settings);
-
   const handleSave = () => {
     setSettings(localSettings);
     localStorage.setItem('berrychat_settings', JSON.stringify(localSettings));
     onClose();
   };
-
   const handleReset = () => {
     setLocalSettings(defaultSettings);
   };
-
   return React.createElement('div', { className: 'settings-overlay fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4' },
     React.createElement('div', { className: `settings-panel ${darkMode ? 'bg-gray-900' : 'bg-white'} rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto` },
       React.createElement('div', { className: 'flex items-center justify-between p-4 border-b border-gray-700' },
@@ -300,7 +245,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
             }, 'Local Model')
           )
         ),
-
         // API Settings
         localSettings.apiMode === 'api' && React.createElement('div', { className: 'space-y-4 p-4 bg-gray-800/50 rounded-lg' },
           React.createElement('h3', { className: 'font-medium text-pink-300' }, 'API Settings'),
@@ -335,7 +279,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
             })
           )
         ),
-
         // Local Settings
         localSettings.apiMode === 'local' && React.createElement('div', { className: 'space-y-4 p-4 bg-gray-800/50 rounded-lg' },
           React.createElement('h3', { className: 'font-medium text-pink-300' }, 'Local Model Settings'),
@@ -360,7 +303,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
             })
           )
         ),
-
         // System Prompt
         React.createElement('div', null,
           React.createElement('label', { className: 'text-sm font-medium text-gray-300' }, 'System Prompt'),
@@ -372,11 +314,9 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
           }),
           React.createElement('div', { className: 'text-xs text-gray-500 mt-1' }, `${localSettings.systemPrompt.length} characters`)
         ),
-
         // Advanced Settings
         React.createElement('div', { className: 'space-y-4' },
           React.createElement('h3', { className: 'font-medium text-pink-300' }, 'Advanced Settings'),
-          
           React.createElement('div', { className: 'flex items-center justify-between' },
             React.createElement('label', { className: 'text-sm text-gray-400' }, 'Enable Streaming'),
             React.createElement('button', {
@@ -388,7 +328,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
               })
             )
           ),
-
           React.createElement('div', null,
             React.createElement('div', { className: 'flex justify-between' },
               React.createElement('label', { className: 'text-sm text-gray-400' }, 'Temperature'),
@@ -404,7 +343,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
               className: 'w-full mt-1 accent-pink-500'
             })
           ),
-
           React.createElement('div', null,
             React.createElement('label', { className: 'text-sm text-gray-400' }, 'Max Tokens'),
             React.createElement('input', {
@@ -414,7 +352,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
               className: 'w-full mt-1 p-2 bg-gray-800 border border-gray-700 rounded text-white focus:border-pink-500 focus:outline-none'
             })
           ),
-
           React.createElement('div', null,
             React.createElement('div', { className: 'flex justify-between' },
               React.createElement('label', { className: 'text-sm text-gray-400' }, 'Top P'),
@@ -431,7 +368,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
             })
           )
         ),
-
         // Action buttons
         React.createElement('div', { className: 'flex gap-2' },
           React.createElement('button', {
@@ -447,7 +383,6 @@ const SettingsPanel = ({ settings, setSettings, onClose, darkMode }) => {
     )
   );
 };
-
 // Confirmation dialog
 const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
   return React.createElement('div', { className: 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4' },
@@ -467,7 +402,6 @@ const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
     )
   );
 };
-
 // Sidebar component
 const Sidebar = ({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, isCollapsed, onToggle }) => {
   const [hoveredChat, setHoveredChat] = useState(null);
@@ -518,52 +452,42 @@ const Sidebar = ({ chats, currentChatId, onSelectChat, onNewChat, onDeleteChat, 
     )
   );
 };
-
 // Main App component
 const App = () => {
   const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem('berrychat_settings');
     return saved ? { ...defaultSettings, ...JSON.parse(saved) } : defaultSettings;
   });
-
   const [chats, setChats] = useState(() => {
     const saved = localStorage.getItem('berrychat_chats');
     if (saved) return JSON.parse(saved);
     const initialChat = { id: generateId(), messages: [], createdAt: Date.now() };
     return [initialChat];
   });
-
   const [currentChatId, setCurrentChatId] = useState(() => {
     const saved = localStorage.getItem('berrychat_currentChat');
     return saved || chats[0]?.id;
   });
-
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null);
   const [error, setError] = useState(null);
-  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-
   const currentChat = chats.find(c => c.id === currentChatId) || chats[0];
-
   // Save to localStorage
   useEffect(() => {
     localStorage.setItem('berrychat_chats', JSON.stringify(chats));
   }, [chats]);
-
   useEffect(() => {
     localStorage.setItem('berrychat_currentChat', currentChatId);
   }, [currentChatId]);
-
   // Scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentChat?.messages]);
-
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -579,23 +503,19 @@ const App = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentChatId]);
-
   const handleNewChat = () => {
     const newChat = { id: generateId(), messages: [], createdAt: Date.now() };
     setChats([newChat, ...chats]);
     setCurrentChatId(newChat.id);
     setSidebarCollapsed(true);
   };
-
   const handleSelectChat = (chatId) => {
     setCurrentChatId(chatId);
     setSidebarCollapsed(true);
   };
-
   const handleDeleteChat = (chatId) => {
     setConfirmDelete(chatId);
   };
-
   const confirmDeleteChat = () => {
     const newChats = chats.filter(c => c.id !== confirmDelete);
     if (newChats.length === 0) {
@@ -608,7 +528,6 @@ const App = () => {
     }
     setConfirmDelete(null);
   };
-
   const handleExport = () => {
     const exportData = {
       chat: currentChat,
@@ -622,7 +541,6 @@ const App = () => {
     a.download = `berrychat-${formatDate(Date.now())}.json`;
     a.click();
   };
-
   const handleExportAll = () => {
     const exportData = {
       chats,
@@ -636,32 +554,26 @@ const App = () => {
     a.download = `berrychat-all-${formatDate(Date.now())}.json`;
     a.click();
   };
-
   const handleClearChat = () => {
     setChats(chats.map(c => 
       c.id === currentChatId ? { ...c, messages: [] } : c
     ));
   };
-
   const handleEditMessage = (messageId, newContent) => {
     // Find the message and resend from that point
     const messageIndex = currentChat.messages.findIndex(m => m.id === messageId);
     if (messageIndex === -1) return;
-
     const updatedMessages = currentChat.messages.slice(0, messageIndex);
     updatedMessages.push({
       ...currentChat.messages[messageIndex],
       content: newContent
     });
-
     setChats(chats.map(c =>
       c.id === currentChatId ? { ...c, messages: updatedMessages } : c
     ));
-
     // Send the edited message
     sendMessage(newContent, updatedMessages.slice(0, -1));
   };
-
   const sendMessage = async (content, existingMessages = currentChat.messages) => {
     const userMessage = {
       id: generateId(),
@@ -669,7 +581,6 @@ const App = () => {
       content,
       timestamp: Date.now()
     };
-
     const updatedMessages = [...existingMessages, userMessage];
     setChats(chats.map(c =>
       c.id === currentChatId ? { ...c, messages: updatedMessages } : c
@@ -677,23 +588,19 @@ const App = () => {
     setInput('');
     setIsLoading(true);
     setError(null);
-
     try {
       const endpoint = settings.apiMode === 'api' ? settings.apiEndpoint : settings.localEndpoint;
       const model = settings.apiMode === 'api' ? settings.model : settings.localModel;
-
       const messages = [
         { role: 'system', content: settings.systemPrompt },
         ...updatedMessages.map(m => ({ role: m.role, content: m.content }))
       ];
-
       const headers = {
         'Content-Type': 'application/json'
       };
       if (settings.apiKey && settings.apiMode === 'api') {
         headers['Authorization'] = `Bearer ${settings.apiKey}`;
       }
-
       const response = await fetch(endpoint, {
         method: 'POST',
         headers,
@@ -706,11 +613,9 @@ const App = () => {
           stream: settings.streaming
         })
       });
-
       if (!response.ok) {
         throw new Error(`API error: ${response.status}`);
       }
-
       if (settings.streaming) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -721,27 +626,21 @@ const App = () => {
           content: '',
           timestamp: Date.now()
         };
-
         setChats(prev => prev.map(c =>
           c.id === currentChatId ? { ...c, messages: [...updatedMessages, assistantMessage] } : c
         ));
-
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
           const chunk = decoder.decode(value);
           const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
-
           for (const line of lines) {
             const data = line.slice(6);
             if (data === '[DONE]') continue;
-
             try {
               const parsed = JSON.parse(data);
               const content = parsed.choices?.[0]?.delta?.content || '';
               assistantContent += content;
-
               setChats(prev => prev.map(c =>
                 c.id === currentChatId ? {
                   ...c,
@@ -764,7 +663,6 @@ const App = () => {
           content: assistantContent,
           timestamp: Date.now()
         };
-
         setChats(prev => prev.map(c =>
           c.id === currentChatId ? { ...c, messages: [...updatedMessages, assistantMessage] } : c
         ));
@@ -785,26 +683,22 @@ const App = () => {
       setIsLoading(false);
     }
   };
-
   const handleSubmit = (e) => {
     e?.preventDefault();
     if (!input.trim() || isLoading) return;
     sendMessage(input.trim());
   };
-
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
-
   const toggleDarkMode = () => {
     const newSettings = { ...settings, darkMode: !settings.darkMode };
     setSettings(newSettings);
     localStorage.setItem('berrychat_settings', JSON.stringify(newSettings));
   };
-
   return React.createElement('div', { className: `app-container ${settings.darkMode ? 'dark' : 'light'}` },
     // Sidebar
     React.createElement(Sidebar, {
@@ -816,7 +710,6 @@ const App = () => {
       isCollapsed: sidebarCollapsed,
       onToggle: () => setSidebarCollapsed(!sidebarCollapsed)
     }),
-
     // Main content
     React.createElement('div', { className: 'main-content flex-1 flex flex-col h-screen' },
       // Header
@@ -858,7 +751,6 @@ const App = () => {
           }, React.createElement(Icons.Settings))
         )
       ),
-
       // Messages area
       React.createElement('div', { className: 'messages-area flex-1 overflow-y-auto p-4' },
         currentChat?.messages.length === 0 && React.createElement('div', { className: 'empty-state flex flex-col items-center justify-center h-full text-center' },
@@ -887,7 +779,6 @@ const App = () => {
         isLoading && React.createElement(TypingIndicator),
         React.createElement('div', { ref: messagesEndRef })
       ),
-
       // Input area
       React.createElement('div', { className: 'input-area p-4 border-t border-gray-800 bg-gray-950' },
         React.createElement('form', { onSubmit: handleSubmit, className: 'relative' },
@@ -913,13 +804,7 @@ const App = () => {
         )
       ),
 
-      // Footer
-      // React.createElement('footer', { className: 'text-center py-2 text-xs text-gray-600 border-t border-gray-800' },
-      //   'Made with 🍓 by ',
-      //   React.createElement('a', { href: 'https://berrry.app', target: '_blank', className: 'text-pink-500 hover:text-pink-400' }, 'berrry.app')
-      // )
     ),
-
     // Settings panel
     showSettings && React.createElement(SettingsPanel, {
       settings,
@@ -927,7 +812,6 @@ const App = () => {
       onClose: () => setShowSettings(false),
       darkMode: settings.darkMode
     }),
-
     // Confirm dialog
     confirmDelete && React.createElement(ConfirmDialog, {
       message: confirmDelete === 'clear' 
@@ -943,10 +827,7 @@ const App = () => {
       },
       onCancel: () => setConfirmDelete(null)
     }),
-
-
   );
 };
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(React.createElement(App));
